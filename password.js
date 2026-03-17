@@ -33,10 +33,6 @@ function secureShuffle(arr) {
   return arr;
 }
 
-function buildPool() {
-  return LOWER + UPPER + DIGITS + SAFE_SPECIAL;
-}
-
 function validateLength(length) {
   if (!Number.isInteger(length)) {
     throw new Error('길이는 정수여야 합니다.');
@@ -46,42 +42,66 @@ function validateLength(length) {
   }
 }
 
-function generatePassword(length = 24) {
+function buildSelectedPools(options) {
+  const pools = [];
+  if (options.lower) pools.push(LOWER);
+  if (options.upper) pools.push(UPPER);
+  if (options.digits) pools.push(DIGITS);
+  if (options.special) pools.push(SAFE_SPECIAL);
+  return pools;
+}
+
+function generatePassword(length = 20, options = {
+  lower: true,
+  upper: true,
+  digits: true,
+  special: true,
+}) {
   validateLength(length);
 
-  const required = [
-    pickOne(LOWER),
-    pickOne(UPPER),
-    pickOne(DIGITS),
-    pickOne(SAFE_SPECIAL),
-  ];
+  const pools = buildSelectedPools(options);
+  if (!pools.length) {
+    throw new Error('최소 1개 이상의 문자 옵션을 선택해주세요.');
+  }
 
-  const pool = buildPool();
+  if (length < pools.length) {
+    throw new Error(`선택한 옵션 수(${pools.length})보다 길이가 짧습니다.`);
+  }
+
+  const required = pools.map((pool) => pickOne(pool));
+  const fullPool = pools.join('');
   const chars = [...required];
 
   for (let i = required.length; i < length; i += 1) {
-    chars.push(pickOne(pool));
+    chars.push(pickOne(fullPool));
   }
 
   return secureShuffle(chars).join('');
 }
 
-function hasAllCategories(value) {
-  return /[a-z]/.test(value)
-    && /[A-Z]/.test(value)
-    && /\d/.test(value)
-    && /[@#%+=_-]/.test(value);
+function satisfiesOptions(value, options) {
+  if (options.lower && !/[a-z]/.test(value)) return false;
+  if (options.upper && !/[A-Z]/.test(value)) return false;
+  if (options.digits && !/\d/.test(value)) return false;
+  if (options.special && !/[@#%+=_-]/.test(value)) return false;
+  return true;
 }
 
 function runSelfChecks() {
+  const defaultOptions = { lower: true, upper: true, digits: true, special: true };
   const set = new Set();
+
   for (let i = 0; i < 10; i += 1) {
-    const pw = generatePassword(24);
-    if (pw.length !== 24) throw new Error('길이 검증 실패');
-    if (!hasAllCategories(pw)) throw new Error('카테고리 검증 실패');
+    const pw = generatePassword(20, defaultOptions);
+    if (pw.length !== 20) throw new Error('길이 검증 실패');
+    if (!satisfiesOptions(pw, defaultOptions)) throw new Error('옵션 검증 실패');
     set.add(pw);
   }
   if (set.size !== 10) throw new Error('중복 발생');
+
+  const customOptions = { lower: true, upper: false, digits: true, special: false };
+  const custom = generatePassword(20, customOptions);
+  if (!satisfiesOptions(custom, customOptions)) throw new Error('커스텀 옵션 검증 실패');
 }
 
 const lengthInput = document.getElementById('length');
@@ -89,6 +109,11 @@ const generateBtn = document.getElementById('generateBtn');
 const copyBtn = document.getElementById('copyBtn');
 const resultEl = document.getElementById('result');
 const feedbackEl = document.getElementById('feedback');
+
+const optLower = document.getElementById('optLower');
+const optUpper = document.getElementById('optUpper');
+const optDigits = document.getElementById('optDigits');
+const optSpecial = document.getElementById('optSpecial');
 
 function showFeedback(message, isError = false) {
   feedbackEl.textContent = message;
@@ -106,10 +131,20 @@ function readLength() {
   return parsed;
 }
 
+function readOptions() {
+  return {
+    lower: optLower.checked,
+    upper: optUpper.checked,
+    digits: optDigits.checked,
+    special: optSpecial.checked,
+  };
+}
+
 function onGenerate() {
   try {
     const length = readLength();
-    const password = generatePassword(length);
+    const options = readOptions();
+    const password = generatePassword(length, options);
     resultEl.value = password;
     showFeedback('새 비밀번호가 생성되었습니다.');
   } catch (err) {
