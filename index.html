@@ -3,33 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>utils.chuckpark.kr - 비밀번호 생성기</title>
-    <meta name="description" content="강한 비밀번호 생성기" />
+    <title>utils.chuckpark.kr</title>
+    <meta name="description" content="작은 유틸 모음" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="wrap">
       <section class="card">
-        <h1>비밀번호 생성기</h1>
-        <p class="desc">소문자/대문자/숫자/특수문자를 포함한 강한 비밀번호를 생성합니다.</p>
+        <h1>utils.chuckpark.kr</h1>
+        <p class="desc">자주 쓰는 도구를 빠르게 실행할 수 있는 유틸 모음입니다.</p>
 
-        <div class="row">
-          <label for="length">비밀번호 길이</label>
-          <input id="length" type="number" min="8" max="64" value="24" inputmode="numeric" />
+        <div class="tool-list">
+          <a class="tool-item" href="./password.html">
+            <strong>비밀번호 생성기</strong>
+            <span>강한 비밀번호를 즉시 생성하고 복사합니다.</span>
+          </a>
+
+          <a class="tool-item" href="./counter.html">
+            <strong>글자수 계산기</strong>
+            <span>입력한 텍스트의 글자수/공백제외/단어수를 계산합니다.</span>
+          </a>
         </div>
-
-        <div class="actions">
-          <button id="generateBtn" class="btn primary" type="button">비밀번호 생성</button>
-          <button id="copyBtn" class="btn" type="button">복사</button>
-        </div>
-
-        <label for="result" class="result-label">생성 결과</label>
-        <textarea id="result" rows="3" readonly placeholder="생성된 비밀번호가 여기에 표시됩니다."></textarea>
-
-        <p id="feedback" class="feedback" aria-live="polite"></p>
       </section>
     </main>
-
-    <script src="./app.js"></script>
   </body>
 </html>
