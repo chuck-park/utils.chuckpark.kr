@@ -53,6 +53,14 @@ label {
   color: var(--muted);
 }
 
+body:not(.util-home) .desc,
+body:not(.util-home) label,
+body:not(.util-home) .back-link,
+body:not(.util-home) .option-group legend,
+body:not(.util-home) .stat span {
+  color: var(--text);
+}
+
 .option-group {
   margin: 0 0 14px;
   padding: 12px;
